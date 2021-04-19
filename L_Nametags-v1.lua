@@ -1,5 +1,4 @@
 -- TODOs:
--- Flash ringcount when zero
 -- Don't draw own name
 -- Don't draw bot name
 -- Options:
@@ -65,8 +64,13 @@ hud.add( function(v, player, camera)
 				charwidth = 4
 			end
 
+			local rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_YELLOWMAP
+			if target_player.rings == 0 then
+				rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_REDMAP
+			end
+
 			v.drawString(hpos, vpos, name, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
-			v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, V_SNAPTOLEFT|V_SNAPTOTOP|V_YELLOWMAP, ringfont)
+			v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, rflags, ringfont)
 		end
 	end
 end, "game")
