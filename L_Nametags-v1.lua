@@ -2,11 +2,9 @@
 -- Flash ringcount when zero
 -- Don't draw own name
 -- Don't draw bot name
--- Draw life count
 -- Options:
 --   Toggle names
 --   Toggle ring count
---   Toggle life count
 
 hud.add( function(v, player, camera)
 	local first_person = not camera.chase
