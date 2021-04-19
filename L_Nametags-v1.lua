@@ -1,5 +1,4 @@
 -- TODOs:
--- Draw ringcount in yellow
 -- Flash ringcount when zero
 -- Don't draw own name
 -- Don't draw bot name
@@ -56,14 +55,20 @@ hud.add( function(v, player, camera)
 			local hpos = hudwidth/2 - FixedMul(distance, tan(hangle))
 			local vpos = hudheight/2 + FixedMul(distance, tan(vangle))
 
-			local text = target_player.name .. " " .. target_player.rings
-			local flags = V_SNAPTOLEFT|V_SNAPTOTOP
+			local name = target_player.name
+			local rings = tostring(target_player.rings)
+
 			local namefont = "thin-fixed-center"
+			local ringfont = "thin-fixed"
+			local charwidth = 5
 			if R_PointToDist(tmo.x, tmo.y) > 1000*FRACUNIT then
 				namefont = "small-thin-fixed-center"
+				ringfont = "small-thin-fixed"
+				charwidth = 4
 			end
 
-			v.drawString(hpos, vpos, text, flags, namefont)
+			v.drawString(hpos, vpos, name, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
+			v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, V_SNAPTOLEFT|V_SNAPTOTOP|V_YELLOWMAP, ringfont)
 		end
 	end
 end, "game")
