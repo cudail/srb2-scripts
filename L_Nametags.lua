@@ -75,72 +75,71 @@ hud.add( function(v, player, camera)
 
 	for target_player in players.iterate() do
 		local tmo = target_player.mo
-		if tmo.valid then
 
-			if player == target_player and not player.showownname then continue end
-			if not P_CheckSight(player.mo, tmo) then continue end
+		if not tmo.valid then continue end
+		if player == target_player and not player.showownname then continue end
+		if not P_CheckSight(player.mo, tmo) then continue end
 
-			-- how far away is the other player?
-			local distance = R_PointToDist(tmo.x, tmo.y)
-			if distance > 1500*FRACUNIT then continue end
+		-- how far away is the other player?
+		local distance = R_PointToDist(tmo.x, tmo.y)
+		if distance > 1500*FRACUNIT then continue end
 
-			--Angle between camera vector and target
-			local hangdiff = R_PointToAngle2(cam.x, cam.y, tmo.x, tmo.y)
-			local hangle = hangdiff - cam.angle
+		--Angle between camera vector and target
+		local hangdiff = R_PointToAngle2(cam.x, cam.y, tmo.x, tmo.y)
+		local hangle = hangdiff - cam.angle
 
-			--check if object is outside of our field of view
-			--converting to fixed just to normalise things
-			--e.g. this will convert 365° to 5° for us
-			local fhanlge = AngleFixed(hangle)
-			local fhfov = AngleFixed(fov/2)
-			local f360 = AngleFixed(ANGLE_MAX)
-			if fhanlge < f360 - fhfov and fhanlge > fhfov then
-				continue
-			end
+		--check if object is outside of our field of view
+		--converting to fixed just to normalise things
+		--e.g. this will convert 365° to 5° for us
+		local fhanlge = AngleFixed(hangle)
+		local fhfov = AngleFixed(fov/2)
+		local f360 = AngleFixed(ANGLE_MAX)
+		if fhanlge < f360 - fhfov and fhanlge > fhfov then
+			continue
+		end
 
-			--figure out vertical angle
-			local h = FixedHypot(cam.x-tmo.x, cam.y-tmo.y)
-			local vangdiff = R_PointToAngle2(0, 0, tmo.z-cam.z+tmo.height+20*FRACUNIT, h) - ANGLE_90
-			local vcangle = first_person and player.aiming or cam.aiming or 0
-			local vangle = vcangle + vangdiff
+		--figure out vertical angle
+		local h = FixedHypot(cam.x-tmo.x, cam.y-tmo.y)
+		local vangdiff = R_PointToAngle2(0, 0, tmo.z-cam.z+tmo.height+20*FRACUNIT, h) - ANGLE_90
+		local vcangle = first_person and player.aiming or cam.aiming or 0
+		local vangle = vcangle + vangdiff
 
-			--again just check if we're outside the FOV
-			local fvangle = AngleFixed(vangle)
-			local fvfov = FixedMul(AngleFixed(fov), FRACUNIT*v.height()/v.width())
-			if fvangle < f360 - fvfov and fvangle > fvfov then
-				continue
-			end
+		--again just check if we're outside the FOV
+		local fvangle = AngleFixed(vangle)
+		local fvfov = FixedMul(AngleFixed(fov), FRACUNIT*v.height()/v.width())
+		if fvangle < f360 - fvfov and fvangle > fvfov then
+			continue
+		end
 
-			local hpos = hudwidth/2 - FixedMul(hud_distance, tan(hangle))
-			local vpos = hudheight/2 + FixedMul(hud_distance, tan(vangle))
+		local hpos = hudwidth/2 - FixedMul(hud_distance, tan(hangle))
+		local vpos = hudheight/2 + FixedMul(hud_distance, tan(vangle))
 
-			local name = target_player.name
-			local rings = tostring(target_player.rings)
+		local name = target_player.name
+		local rings = tostring(target_player.rings)
 
-			local namefont = "thin-fixed-center"
-			local ringfont = "thin-fixed"
-			local charwidth = 5
-			if distance > 500*FRACUNIT then
-				namefont = "small-thin-fixed-center"
-				ringfont = "small-thin-fixed"
-				charwidth = 4
-			end
+		local namefont = "thin-fixed-center"
+		local ringfont = "thin-fixed"
+		local charwidth = 5
+		if distance > 500*FRACUNIT then
+			namefont = "small-thin-fixed-center"
+			ringfont = "small-thin-fixed"
+			charwidth = 4
+		end
 
-			local rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_YELLOWMAP
-			if target_player.rings == 0 then
-				rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_REDMAP
-			end
+		local rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_YELLOWMAP
+		if target_player.rings == 0 then
+			rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_REDMAP
+		end
 
-			local nameflags = V_SNAPTOLEFT|V_SNAPTOTOP
-			if player.namecolour then
-				nameflags = $1 | player.namecolour
-			end
+		local nameflags = V_SNAPTOLEFT|V_SNAPTOTOP
+		if player.namecolour then
+			nameflags = $1 | player.namecolour
+		end
 
-			v.drawString(hpos, vpos, name, nameflags, namefont)
-			v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, rflags, ringfont)
-			if player.lastmessage and leveltime < player.lastmessagetimer+chat_lifespan then
-				v.drawString(hpos, vpos+8*FRACUNIT, player.lastmessage, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
-			end
+		v.drawString(hpos, vpos, name, nameflags, namefont)
+		v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, rflags, ringfont)
+		if player.lastmessage and leveltime < player.lastmessagetimer+chat_lifespan then
+			v.drawString(hpos, vpos+8*FRACUNIT, player.lastmessage, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
 		end
 	end
 end, "game")
