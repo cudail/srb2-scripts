@@ -1,5 +1,4 @@
 -- TODOs:
--- Adjust distance that size change happens at
 -- Don't draw own name
 -- Don't draw bot name
 -- Options:
@@ -16,13 +15,17 @@ hud.add( function(v, player, camera)
 	local fov = ANGLE_90 -- Can this be fetched live instead of assumed?
 
 	-- the "distance" the HUD plane is projected from the player
-	local distance = FixedDiv(hudwidth / 2, tan(fov/2))
+	local hud_distance = FixedDiv(hudwidth / 2, tan(fov/2))
 
 	for target_player in players.iterate() do
 		local tmo = target_player.mo
 		if tmo.valid then
 
 			if not P_CheckSight(player.mo, tmo) then continue end
+
+			-- how far away is the other player?
+			local distance = R_PointToDist(tmo.x, tmo.y)
+			if distance > 1500*FRACUNIT then continue end
 
 			--Angle between camera vector and target
 			local hangdiff = R_PointToAngle2(cam.x, cam.y, tmo.x, tmo.y)
@@ -51,8 +54,8 @@ hud.add( function(v, player, camera)
 				continue
 			end
 
-			local hpos = hudwidth/2 - FixedMul(distance, tan(hangle))
-			local vpos = hudheight/2 + FixedMul(distance, tan(vangle))
+			local hpos = hudwidth/2 - FixedMul(hud_distance, tan(hangle))
+			local vpos = hudheight/2 + FixedMul(hud_distance, tan(vangle))
 
 			local name = target_player.name
 			local rings = tostring(target_player.rings)
@@ -60,7 +63,7 @@ hud.add( function(v, player, camera)
 			local namefont = "thin-fixed-center"
 			local ringfont = "thin-fixed"
 			local charwidth = 5
-			if R_PointToDist(tmo.x, tmo.y) > 1000*FRACUNIT then
+			if distance > 500*FRACUNIT then
 				namefont = "small-thin-fixed-center"
 				ringfont = "small-thin-fixed"
 				charwidth = 4
