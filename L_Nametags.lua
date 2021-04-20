@@ -92,6 +92,7 @@ hud.add( function(v, player, camera)
 	local hud_distance = FixedDiv(hudwidth / 2, tan(fov/2))
 
 	for _, target_player in pairs(sorted_players) do
+		if not target_player.valid or not target_player.mo then continue end
 		local tmo = target_player.mo
 
 		if not tmo.valid then continue end
