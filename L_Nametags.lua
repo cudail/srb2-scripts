@@ -35,6 +35,7 @@ local options = {
 
 local chat_lifespan = 5*TICRATE
 
+local sorted_players = {}
 
 
 local split = function(string, delimiter)
@@ -74,7 +75,7 @@ hud.add( function(v, player, camera)
 	-- the "distance" the HUD plane is projected from the player
 	local hud_distance = FixedDiv(hudwidth / 2, tan(fov/2))
 
-	for target_player in players.iterate() do
+	for _, target_player in pairs(sorted_players) do
 		local tmo = target_player.mo
 
 		if not tmo.valid then continue end
@@ -177,6 +178,17 @@ addHook("PlayerMsg", function(player, typenum, target, message)
 	player.lastmessage = message
 	player.lastmessagetimer = leveltime
 	return false
+end)
+
+
+addHook("PostThinkFrame", function()
+	sorted_players = {}
+	for player in players.iterate()
+		table.insert(sorted_players, player)
+	end
+	table.sort(sorted_players, function(a, b)
+		return R_PointToDist(a.mo.x, a.mo.y) > R_PointToDist(b.mo.x, b.mo.y)
+	end)
 end)
 
 
