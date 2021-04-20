@@ -1,9 +1,11 @@
 -- TODOs:
+-- Adjust distance that size change happens at
 -- Don't draw own name
 -- Don't draw bot name
 -- Options:
 --   Toggle names
 --   Toggle ring count
+--   flash name if ring count is 0
 
 hud.add( function(v, player, camera)
 	local first_person = not camera.chase
