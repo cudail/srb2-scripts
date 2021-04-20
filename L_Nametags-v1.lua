@@ -33,6 +33,7 @@ local name_colours = {
 }
 
 
+local chat_lifespan = 5*TICRATE
 
 local set_name_colour = function(player, arg)
 	if arg == nil or arg == '' then
@@ -132,6 +133,21 @@ hud.add( function(v, player, camera)
 
 			v.drawString(hpos, vpos, name, nameflags, namefont)
 			v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, rflags, ringfont)
+			if player.lastmessage and leveltime < player.lastmessagetimer+chat_lifespan then
+				v.drawString(hpos, vpos+8*FRACUNIT, player.lastmessage, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
+			end
 		end
 	end
 end, "game")
+
+
+
+addHook("PlayerMsg", function(player, typenum, target, message)
+	if typenum ~= 0 then
+		return false -- only for normal global messages
+	end
+
+	player.lastmessage = message
+	player.lastmessagetimer = leveltime
+	return false
+end)
