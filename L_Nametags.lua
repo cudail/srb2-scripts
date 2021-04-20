@@ -123,10 +123,12 @@ hud.add( function(v, player, camera)
 		local namefont = "thin-fixed-center"
 		local ringfont = "thin-fixed"
 		local charwidth = 5
+		local lineheight = 8
 		if distance > 500*FRACUNIT then
 			namefont = "small-thin-fixed-center"
 			ringfont = "small-thin-fixed"
 			charwidth = 4
+			lineheight = 4
 		end
 
 		local flash = (leveltime/(TICRATE/6))%2 == 0
@@ -158,7 +160,6 @@ hud.add( function(v, player, camera)
 		and leveltime < target_player.lastmessagetimer+chat_lifespan then
 			local flags = V_SNAPTOLEFT|V_SNAPTOTOP
 			local lines = break_into_lines(v, target_player.lastmessage, flags)
-			local lineheight = 8
 			for i, l in pairs(lines) do
 				v.drawString(hpos, vpos+(lineheight*i*FRACUNIT), l, flags, namefont)
 			end
