@@ -186,12 +186,20 @@ end)
 
 addHook("PostThinkFrame", function()
 	sorted_players = {}
-	for player in players.iterate()
+	for player in players.iterate() do
 		table.insert(sorted_players, player)
 	end
 	table.sort(sorted_players, function(a, b)
 		return R_PointToDist(a.mo.x, a.mo.y) > R_PointToDist(b.mo.x, b.mo.y)
 	end)
+end)
+
+
+addHook("MapLoad", function()
+	for player in players.iterate() do
+		player.lastmessage = nil
+		player.lastmessagetimer = nil
+	end
 end)
 
 
