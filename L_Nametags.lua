@@ -27,7 +27,8 @@ local name_colours = {
 local options = {
 	shownames = true,
 	showchats = true,
-	showrings = false
+	showrings = false,
+	flashrings = true
 }
 
 
@@ -101,7 +102,8 @@ hud.add( function(v, player, camera)
 		end
 
 		local rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_YELLOWMAP
-		if target_player.rings == 0 then
+		if options.flashrings and target_player.rings == 0
+		and (leveltime/(TICRATE/6))%2 == 0 then
 			rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_REDMAP
 		end
 
@@ -209,10 +211,14 @@ COM_AddCommand("shownames", function(player, arg)
 	option_toggle("shownames", arg, player)
 end, COM_ADMIN)
 
+COM_AddCommand("showchats", function(player, arg)
+	option_toggle("showchats", arg, player)
+end, COM_ADMIN)
+
 COM_AddCommand("showrings", function(player, arg)
 	option_toggle("showrings", arg, player)
 end, COM_ADMIN)
 
-COM_AddCommand("showchats", function(player, arg)
-	option_toggle("showchats", arg, player)
+COM_AddCommand("flashrings", function(player, arg)
+	option_toggle("flashrings", arg, player)
 end, COM_ADMIN)
