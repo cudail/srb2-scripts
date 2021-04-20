@@ -203,6 +203,11 @@ addHook("MapLoad", function()
 end)
 
 
+addHook("NetVars", function(network)
+	options = network($)
+end)
+
+
 --------------------
 -- player options --
 --------------------
