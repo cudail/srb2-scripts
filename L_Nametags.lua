@@ -1,4 +1,22 @@
 
+--[[
+These are the server options available with the default value in square brackets
+shownames [on]
+showchats [on]
+showrings [off]
+flashnames [off]
+flashrings [on]
+
+These are the player options:
+showownname [off]
+showbotname [off]
+namecolour {colour}
+
+Repalce {colour} with one of red, blue, etc
+namecolor is also accepted as a substitute
+--]]
+
+
 local name_colours = {
 	pink = V_MAGENTAMAP,
 	magenta = V_MAGENTAMAP,
@@ -28,7 +46,7 @@ local options = {
 	shownames = true,
 	showchats = true,
 	showrings = false,
-	flashname = false,
+	flashnames = false,
 	flashrings = true,
 }
 
@@ -137,7 +155,7 @@ hud.add( function(v, player, camera)
 		end
 
 		local nameflags = V_SNAPTOLEFT|V_SNAPTOTOP
-		if flash and options.flashname and target_player.rings == 0 then
+		if flash and options.flashnames and target_player.rings == 0 then
 			if target_player.namecolour ~= V_REDMAP then
 				nameflags = $1 | V_REDMAP
 			end
@@ -289,6 +307,6 @@ COM_AddCommand("flashrings", function(player, arg)
 	option_toggle("flashrings", arg, player)
 end, COM_ADMIN)
 
-COM_AddCommand("flashname", function(player, arg)
-	option_toggle("flashname", arg, player)
+COM_AddCommand("flashnames", function(player, arg)
+	option_toggle("flashnames", arg, player)
 end, COM_ADMIN)
