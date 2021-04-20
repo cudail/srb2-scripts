@@ -42,10 +42,23 @@ local set_name_colour = function(player, arg)
 	end
 end
 
-
-
 COM_AddCommand("namecolour", set_name_colour)
 COM_AddCommand("namecolor", set_name_colour)
+
+
+COM_AddCommand("showownname", function(player, arg)
+	if arg == nil then
+		player.showownname = not player.showownname
+	elseif arg == "on" or arg == "1" then
+		player.showownname = true
+	elseif arg == "off" or arg =="0" then
+		player.showownname = false
+	else
+		CONS_Printf(player, "showownname should be called with either 'on', 'off', or no argument")
+		return
+	end
+	CONS_Printf(player, "showownname has been "..(player.showownname and "enabled" or "disabled")..".")
+end)
 
 
 
@@ -64,6 +77,7 @@ hud.add( function(v, player, camera)
 		local tmo = target_player.mo
 		if tmo.valid then
 
+			if player == target_player and not player.showownname then continue end
 			if not P_CheckSight(player.mo, tmo) then continue end
 
 			-- how far away is the other player?
