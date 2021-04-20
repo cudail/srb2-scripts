@@ -24,9 +24,14 @@ local name_colours = {
 }
 
 
+local options = {
+	shownames = true,
+	showchats = true,
+	showrings = false
+}
+
+
 local chat_lifespan = 5*TICRATE
-
-
 
 
 hud.add( function(v, player, camera)
@@ -105,14 +110,22 @@ hud.add( function(v, player, camera)
 			nameflags = $1 | player.namecolour
 		end
 
-		v.drawString(hpos, vpos, name, nameflags, namefont)
-		v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, rflags, ringfont)
-		if player.lastmessage and leveltime < player.lastmessagetimer+chat_lifespan then
+		if options.shownames then
+			v.drawString(hpos, vpos, name, nameflags, namefont)
+		end
+
+		if options.showrings then
+			local offset = options.shownames and (#name+2)*charwidth*FRACUNIT/2 or 0
+			ringfont = $1 .. (options.shownames and "" or "-center")
+			v.drawString(hpos+offset, vpos, rings, rflags, ringfont)
+		end
+
+		if options.showchats and player.lastmessage
+		and leveltime < player.lastmessagetimer+chat_lifespan then
 			v.drawString(hpos, vpos+8*FRACUNIT, player.lastmessage, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
 		end
 	end
 end, "game")
-
 
 
 
@@ -127,6 +140,23 @@ addHook("PlayerMsg", function(player, typenum, target, message)
 end)
 
 
+--------------------
+-- player options --
+--------------------
+local player_option_toggle = function(option_name, arg, player)
+	local current_bool = player[option_name]
+	if arg == nil then
+		player[option_name] = not $1
+	elseif arg == "0" or arg == "off" or arg == "false" then
+		player[option_name] = false
+	elseif arg == "1" or arg == "on" or arg == "true" then
+		player[option_name] = true
+	else
+		CONS_Printf(player, option_name.." should be called with either 'on', 'off', or no argument")
+		return
+	end
+	CONS_Printf(player, option_name.." has been "..(player[option_name] and "enabled" or "disabled")..".")
+end
 
 local set_name_colour = function(player, arg)
 	if arg == nil or arg == '' then
@@ -148,22 +178,6 @@ end
 COM_AddCommand("namecolour", set_name_colour)
 COM_AddCommand("namecolor", set_name_colour)
 
-
-local player_option_toggle = function(option_name, arg, player)
-	local current_bool = player[option_name]
-	if arg == nil then
-		player[option_name] = not $1
-	elseif arg == "0" or arg == "off" or arg == "false" then
-		player[option_name] = false
-	elseif arg == "1" or arg == "on" or arg == "true" then
-		player[option_name] = true
-	else
-		CONS_Printf(player, option_name.." should be called with either 'on', 'off', or no argument")
-		return
-	end
-	CONS_Printf(player, option_name.." has been "..(player[option_name] and "enabled" or "disabled")..".")
-end
-
 COM_AddCommand("showownname", function(player, arg)
 	player_option_toggle("showownname", arg, player)
 end)
@@ -171,3 +185,34 @@ end)
 COM_AddCommand("showbotnames", function(player, arg)
 	player_option_toggle("showbotnames", arg, player)
 end)
+
+--------------------
+-- server options --
+--------------------
+
+local option_toggle = function(option_name, arg, player)
+	local current_bool = options[option_name]
+	if arg == nil then
+		options[option_name] = not $1
+	elseif arg == "0" or arg == "off" or arg == "false" then
+		options[option_name] = false
+	elseif arg == "1" or arg == "on" or arg == "true" then
+		options[option_name] = true
+	else
+		CONS_Printf(player, option_name.." should be called with either 'on', 'off', or no argument")
+		return
+	end
+	CONS_Printf(player, option_name.." has been "..(options[option_name] and "enabled" or "disabled")..".")
+end
+
+COM_AddCommand("shownames", function(player, arg)
+	option_toggle("shownames", arg, player)
+end, COM_ADMIN)
+
+COM_AddCommand("showrings", function(player, arg)
+	option_toggle("showrings", arg, player)
+end, COM_ADMIN)
+
+COM_AddCommand("showchats", function(player, arg)
+	option_toggle("showchats", arg, player)
+end, COM_ADMIN)
