@@ -26,39 +26,6 @@ local name_colours = {
 
 local chat_lifespan = 5*TICRATE
 
-local set_name_colour = function(player, arg)
-	if arg == nil or arg == '' then
-		CONS_Printf(player, "set_name_colour error: No colour specified.")
-		return
-	end
-
-	local colourmap = name_colours[arg]
-
-	if colourmap then
-		player.namecolour = colourmap
-		CONS_Printf(player, "set_name_colour: Nametag colour changed to "..arg)
-	else
-		CONS_Printf(player, "set_name_colour error: Unknown name colour '"..arg.."'")
-	end
-end
-
-COM_AddCommand("namecolour", set_name_colour)
-COM_AddCommand("namecolor", set_name_colour)
-
-
-COM_AddCommand("showownname", function(player, arg)
-	if arg == nil then
-		player.showownname = not player.showownname
-	elseif arg == "on" or arg == "1" then
-		player.showownname = true
-	elseif arg == "off" or arg =="0" then
-		player.showownname = false
-	else
-		CONS_Printf(player, "showownname should be called with either 'on', 'off', or no argument")
-		return
-	end
-	CONS_Printf(player, "showownname has been "..(player.showownname and "enabled" or "disabled")..".")
-end)
 
 
 
@@ -77,7 +44,9 @@ hud.add( function(v, player, camera)
 		local tmo = target_player.mo
 
 		if not tmo.valid then continue end
-		if player == target_player and not player.showownname then continue end
+		if not player.showownname and player == target_player then continue end
+		if not player.showbotnames and target_player.bot == 1 then continue end
+
 		if not P_CheckSight(player.mo, tmo) then continue end
 
 		-- how far away is the other player?
@@ -146,6 +115,7 @@ end, "game")
 
 
 
+
 addHook("PlayerMsg", function(player, typenum, target, message)
 	if typenum ~= 0 then
 		return false -- only for normal global messages
@@ -154,4 +124,50 @@ addHook("PlayerMsg", function(player, typenum, target, message)
 	player.lastmessage = message
 	player.lastmessagetimer = leveltime
 	return false
+end)
+
+
+
+local set_name_colour = function(player, arg)
+	if arg == nil or arg == '' then
+		CONS_Printf(player, "set_name_colour error: No colour specified.")
+		return
+	end
+
+	local colourmap = name_colours[arg]
+
+	if colourmap then
+		player.namecolour = colourmap
+		CONS_Printf(player, "set_name_colour: Nametag colour changed to "..arg)
+	else
+		CONS_Printf(player, "set_name_colour error: Unknown name colour '"..arg.."'")
+	end
+end
+
+
+COM_AddCommand("namecolour", set_name_colour)
+COM_AddCommand("namecolor", set_name_colour)
+
+
+local player_option_toggle = function(option_name, arg, player)
+	local current_bool = player[option_name]
+	if arg == nil then
+		player[option_name] = not $1
+	elseif arg == "0" or arg == "off" or arg == "false" then
+		player[option_name] = false
+	elseif arg == "1" or arg == "on" or arg == "true" then
+		player[option_name] = true
+	else
+		CONS_Printf(player, option_name.." should be called with either 'on', 'off', or no argument")
+		return
+	end
+	CONS_Printf(player, option_name.." has been "..(player[option_name] and "enabled" or "disabled")..".")
+end
+
+COM_AddCommand("showownname", function(player, arg)
+	player_option_toggle("showownname", arg, player)
+end)
+
+COM_AddCommand("showbotnames", function(player, arg)
+	player_option_toggle("showbotnames", arg, player)
 end)
