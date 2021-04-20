@@ -28,7 +28,8 @@ local options = {
 	shownames = true,
 	showchats = true,
 	showrings = false,
-	flashrings = true
+	flashname = false,
+	flashrings = true,
 }
 
 
@@ -101,14 +102,18 @@ hud.add( function(v, player, camera)
 			charwidth = 4
 		end
 
+		local flash = (leveltime/(TICRATE/6))%2 == 0
 		local rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_YELLOWMAP
-		if options.flashrings and target_player.rings == 0
-		and (leveltime/(TICRATE/6))%2 == 0 then
+		if flash and options.flashrings and target_player.rings == 0 then
 			rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_REDMAP
 		end
 
 		local nameflags = V_SNAPTOLEFT|V_SNAPTOTOP
-		if player.namecolour then
+		if flash and options.flashname and target_player.rings == 0 then
+			if player.namecolour ~= V_REDMAP then
+				nameflags = $1 | V_REDMAP
+			end
+		elseif player.namecolour then
 			nameflags = $1 | player.namecolour
 		end
 
@@ -221,4 +226,8 @@ end, COM_ADMIN)
 
 COM_AddCommand("flashrings", function(player, arg)
 	option_toggle("flashrings", arg, player)
+end, COM_ADMIN)
+
+COM_AddCommand("flashname", function(player, arg)
+	option_toggle("flashname", arg, player)
 end, COM_ADMIN)
