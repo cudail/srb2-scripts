@@ -1,12 +1,3 @@
--- TODOs:
--- Don't draw own name
--- Don't draw bot name
--- Display message when player chats
--- Options:
---   Toggle names
---   Toggle ring count
---   flash name if ring count is 0
-
 
 local name_colours = {
 	pink = V_MAGENTAMAP,
