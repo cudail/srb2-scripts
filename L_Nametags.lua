@@ -33,8 +33,6 @@ local options = {
 }
 
 
-local chat_lifespan = 5*TICRATE
-
 local sorted_players = {}
 
 
@@ -156,6 +154,11 @@ hud.add( function(v, player, camera)
 			ringfont = $1 .. (options.shownames and "" or "-center")
 			v.drawString(hpos+offset, vpos, rings, rflags, ringfont)
 		end
+
+		if not target_player.lastmessagetimer then continue end
+
+		local chat_lifespan = 2*TICRATE
+		chat_lifespan = $1 + #target_player.lastmessage * TICRATE / 18
 
 		if options.showchats and target_player.lastmessage
 		and leveltime < target_player.lastmessagetimer+chat_lifespan then
