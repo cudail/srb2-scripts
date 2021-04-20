@@ -137,11 +137,11 @@ hud.add( function(v, player, camera)
 
 		local nameflags = V_SNAPTOLEFT|V_SNAPTOTOP
 		if flash and options.flashname and target_player.rings == 0 then
-			if player.namecolour ~= V_REDMAP then
+			if target_player.namecolour ~= V_REDMAP then
 				nameflags = $1 | V_REDMAP
 			end
-		elseif player.namecolour then
-			nameflags = $1 | player.namecolour
+		elseif target_player.namecolour then
+			nameflags = $1 | target_player.namecolour
 		end
 
 		if options.shownames then
@@ -154,10 +154,10 @@ hud.add( function(v, player, camera)
 			v.drawString(hpos+offset, vpos, rings, rflags, ringfont)
 		end
 
-		if options.showchats and player.lastmessage
-		and leveltime < player.lastmessagetimer+chat_lifespan then
+		if options.showchats and target_player.lastmessage
+		and leveltime < target_player.lastmessagetimer+chat_lifespan then
 			local flags = V_SNAPTOLEFT|V_SNAPTOTOP
-			local lines = break_into_lines(v, player.lastmessage, flags)
+			local lines = break_into_lines(v, target_player.lastmessage, flags)
 			local lineheight = 8
 			for i, l in pairs(lines) do
 				v.drawString(hpos, vpos+(lineheight*i*FRACUNIT), l, flags, namefont)
