@@ -1,6 +1,7 @@
 -- TODOs:
 -- Don't draw own name
 -- Don't draw bot name
+-- Display message when player chats
 -- Options:
 --   Toggle names
 --   Toggle ring count
