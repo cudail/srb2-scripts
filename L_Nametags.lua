@@ -36,6 +36,33 @@ local options = {
 local chat_lifespan = 5*TICRATE
 
 
+
+local split = function(string, delimiter)
+	local list = {}
+	for token in string.gmatch(string, "[^"..delimiter.."]+") do
+		table.insert(list, token)
+	end
+	return list
+end
+
+local break_into_lines = function(view, message, flags)
+	local max_width = 120
+	local text_lines = {}
+	local words = split(message, " ")
+	for i, word in pairs(words) do
+		local this_line = text_lines[#text_lines]
+		if #(text_lines) == 0 then
+			text_lines = {word}
+		elseif view.stringWidth(this_line .. " " .. word, flags, thin)/2 > max_width then
+			table.insert(text_lines, word)
+		else
+			text_lines[#text_lines] = $1 .. " " .. word
+		end
+	end
+	return text_lines
+end
+
+
 hud.add( function(v, player, camera)
 	local first_person = not camera.chase
 	local cam = first_person and player.mo or camera
@@ -129,7 +156,12 @@ hud.add( function(v, player, camera)
 
 		if options.showchats and player.lastmessage
 		and leveltime < player.lastmessagetimer+chat_lifespan then
-			v.drawString(hpos, vpos+8*FRACUNIT, player.lastmessage, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
+			local flags = V_SNAPTOLEFT|V_SNAPTOTOP
+			local lines = break_into_lines(v, player.lastmessage, flags)
+			local lineheight = 8
+			for i, l in pairs(lines) do
+				v.drawString(hpos, vpos+(lineheight*i*FRACUNIT), l, flags, namefont)
+			end
 		end
 	end
 end, "game")
