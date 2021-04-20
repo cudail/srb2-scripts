@@ -7,6 +7,56 @@
 --   Toggle ring count
 --   flash name if ring count is 0
 
+
+local name_colours = {
+	pink = V_MAGENTAMAP,
+	magenta = V_MAGENTAMAP,
+	yellow = V_MAGENTAMAP,
+	green = V_GREENMAP,
+	blue = V_BLUEMAP,
+	red = V_REDMAP,
+	grey = V_GRAYMAP,
+	gray = V_GRAYMAP,
+	orange = V_ORANGEMAP,
+	sky = V_SKYMAP,
+	cyan = V_SKYMAP,
+	purple = V_PURPLEMAP,
+	aqua = V_AQUAMAP,
+	teal = V_AQUAMAP,
+	peridot = V_PERIDOTMAP,
+	azure = V_AZUREMAP,
+	brown = V_BROWNMAP,
+	rosy = V_ROSYMAP,
+	rose = V_ROSYMAP,
+	black = V_INVERTMAP,
+	inverted = V_INVERTMAP
+}
+
+
+
+local set_name_colour = function(player, arg)
+	if arg == nil or arg == '' then
+		CONS_Printf(player, "set_name_colour error: No colour specified.")
+		return
+	end
+
+	local colourmap = name_colours[arg]
+
+	if colourmap then
+		player.namecolour = colourmap
+		CONS_Printf(player, "set_name_colour: Nametag colour changed to "..arg)
+	else
+		CONS_Printf(player, "set_name_colour error: Unknown name colour '"..arg.."'")
+	end
+end
+
+
+
+COM_AddCommand("namecolour", set_name_colour)
+COM_AddCommand("namecolor", set_name_colour)
+
+
+
 hud.add( function(v, player, camera)
 	local first_person = not camera.chase
 	local cam = first_person and player.mo or camera
@@ -75,7 +125,12 @@ hud.add( function(v, player, camera)
 				rflags = V_SNAPTOLEFT|V_SNAPTOTOP|V_REDMAP
 			end
 
-			v.drawString(hpos, vpos, name, V_SNAPTOLEFT|V_SNAPTOTOP, namefont)
+			local nameflags = V_SNAPTOLEFT|V_SNAPTOTOP
+			if player.namecolour then
+				nameflags = $1 | player.namecolour
+			end
+
+			v.drawString(hpos, vpos, name, nameflags, namefont)
 			v.drawString(hpos+(#name+2)*charwidth*FRACUNIT/2, vpos, rings, rflags, ringfont)
 		end
 	end
