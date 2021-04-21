@@ -206,8 +206,12 @@ end)
 addHook("PostThinkFrame", function()
 	sorted_players = {}
 	for player in players.iterate() do
-		table.insert(sorted_players, player)
+		if player and player.valid and player.mo and player.mo.valid then
+			table.insert(sorted_players, player)
+		end
 	end
+	-- This list will be different for every player in a network game
+	-- Don't use it for anything other than HUD drawing
 	table.sort(sorted_players, function(a, b)
 		return R_PointToDist(a.mo.x, a.mo.y) > R_PointToDist(b.mo.x, b.mo.y)
 	end)
