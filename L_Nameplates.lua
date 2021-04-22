@@ -103,7 +103,9 @@ hud.add( function(v, player, camera)
 
 		-- how far away is the other player?
 		local distance = R_PointToDist(tmo.x, tmo.y)
-		if distance > 1500*FRACUNIT then continue end
+
+		local distlimit = player.shownamedistance or 1500
+		if distance > distlimit*FRACUNIT then continue end
 
 		--Angle between camera vector and target
 		local hangdiff = R_PointToAngle2(cam.x, cam.y, tmo.x, tmo.y)
@@ -275,6 +277,22 @@ end)
 
 COM_AddCommand("showbotnames", function(player, arg)
 	player_option_toggle("showbotnames", arg, player)
+end)
+
+COM_AddCommand("shownamedistance", function(player, arg)
+	if arg == nil then
+		CONS_Printf(player, "shownamedistance: Please enter a distance (default: 1500)")
+		return
+	end
+
+	local dist = tonumber(arg)
+
+	if dist == null then
+		CONS_Printf(player, "shownamedistance: Please enter a distance (default: 1500)")
+		return
+	end
+
+	player.shownamedistance = dist
 end)
 
 --------------------
