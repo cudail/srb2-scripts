@@ -81,6 +81,11 @@ end
 
 
 hud.add( function(v, player, camera)
+	-- If everything is disabled just return immediately
+	if not options.shownames and not options.showrings and not options.showchats then
+		return
+	end
+
 	local first_person = not camera.chase
 	local cam = first_person and player.mo or camera
 	local hudwidth = 320*FRACUNIT
