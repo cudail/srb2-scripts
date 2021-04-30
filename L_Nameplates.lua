@@ -9,7 +9,7 @@ flashrings [on]
 
 These are the player options:
 showownname [off]
-showbotname [off]
+showbotnames [off]
 namecolour {colour}
 
 Repalce {colour} with one of red, blue, etc
